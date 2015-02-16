@@ -24,10 +24,6 @@
 #include <CL/cl.hpp>
 #endif
 
-#ifndef REG_OPENCL_FILE
-#define REG_OPENCL_FILE ""
-#endif
-
 #include "depth_registration_opencl.h"
 
 #define OUT_NAME(FUNCTION) "[DepthRegistrationOpenCL::" FUNCTION "] "
@@ -153,11 +149,19 @@ bool selectDevice(std::vector<cl::Device> &devices, cl::Device &device, const in
   return selected;
 }
 
-bool DepthRegistrationOpenCL::init(const int deviceId)
+bool DepthRegistrationOpenCL::init(const int deviceId, const std::map<std::string, std::string>& params)
 {
+  std::string sourceFilename = "depth_registration.cl";
   std::string sourceCode;
-  if(!readProgram(sourceCode))
+
+  if(params.find("clSource") != params.end())
   {
+    sourceFilename = params.find("clSource")->second;
+  }
+
+  if(!readProgram(sourceFilename, sourceCode))
+  {
+    std::cerr << OUT_NAME("init") "failed to read opencl source code from " << sourceFilename << std::endl;
     return false;
   }
 
@@ -365,9 +369,9 @@ void DepthRegistrationOpenCL::generateOptions(std::string &options) const
   options = oss.str();
 }
 
-bool DepthRegistrationOpenCL::readProgram(std::string &source) const
+bool DepthRegistrationOpenCL::readProgram(const std::string& filename, std::string &source) const
 {
-  std::ifstream file(REG_OPENCL_FILE);
+  std::ifstream file(filename);
 
   if(!file.is_open())
   {

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(registration_viewer)
+project(kinect2_registration_viewer)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBT_USE_DOUBLE_PRECISION -Wall")
 # Unused warnings
@@ -68,8 +68,8 @@ include_directories(include
   ${PCL_INCLUDE_DIRS}
 )
 
-add_executable(viewer src/viewer.cpp)
-target_link_libraries(viewer
+add_executable(kinect2_registration_viewer src/viewer.cpp)
+target_link_libraries(kinect2_registration_viewer
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
   ${PCL_LIBRARIES}
@@ -90,11 +90,11 @@ target_link_libraries(viewer
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS kinect2_bridge kinect2_bridge_node
-#   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
-# )
+install(TARGETS kinect2_registration_viewer
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
 
 ## Mark cpp header files for installation
 # install(DIRECTORY include/${PROJECT_NAME}/

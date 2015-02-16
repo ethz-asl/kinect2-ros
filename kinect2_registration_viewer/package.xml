@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package>
-  <name>registration_viewer</name>
+  <name>kinect2_registration_viewer</name>
   <version>0.0.1</version>
-  <description>The registration_viewer package</description>
+  <description>The kinect2_registration_viewer package</description>
 
   <maintainer email="wiedemeyer@informatik.uni-bremen.de">Thiemo Wiedemeyer</maintainer>
 

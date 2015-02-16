@@ -48,7 +48,7 @@
 #include <message_filters/sync_policies/exact_time.h>
 #include <message_filters/sync_policies/approximate_time.h>
 
-#include <kinect2_definitions.h>
+#include <kinect2_bridge/kinect2_definitions.h>
 
 class Receiver
 {
@@ -523,11 +523,7 @@ void help(const std::string &path)
             << "Visualization:" << std::endl
             << "  -image      displays the depth image overlayed to the color image" << std::endl
             << "  -cloud      displays the point cloud in a PCL visualizer" << std::endl
-            << "  -both       displays both of the above" << std::endl
-            << "Predefined topics for color and depth:" << std::endl
-            << "  -kinect2    topics for the low res depth and color" << std::endl
-            << "  -kinect2hd  topics for the high res depth and color" << std::endl
-            << "  -kinect2ir  topics for the depth and ir" << std::endl;
+            << "  -both       displays both of the above" << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -539,8 +535,8 @@ int main(int argc, char **argv)
     return 0;
   }
 
-  std::string topicColor = K2_TOPIC_LORES_COLOR K2_TOPIC_RAW;
-  std::string topicDepth = K2_TOPIC_LORES_DEPTH K2_TOPIC_RAW;
+  std::string topicColor = K2_TOPIC_SCALED_COLOR K2_TOPIC_RAW;
+  std::string topicDepth = K2_TOPIC_SCALED_DEPTH K2_TOPIC_RAW;
   bool useExact = true;
   bool useCompressed = true;
   Receiver::Mode mode = Receiver::CLOUD;
@@ -554,24 +550,6 @@ int main(int argc, char **argv)
       help(argv[0]);
       ros::shutdown();
       return 0;
-    }
-    else if(param == "-kinect2")
-    {
-      topicColor = K2_TOPIC_LORES_COLOR K2_TOPIC_RAW;
-      topicDepth = K2_TOPIC_LORES_DEPTH K2_TOPIC_RAW;
-      useExact = true;
-    }
-    else if(param == "-kinect2hd")
-    {
-      topicColor = K2_TOPIC_RECT_COLOR K2_TOPIC_RAW;
-      topicDepth = K2_TOPIC_HIRES_DEPTH K2_TOPIC_RAW;
-      useExact = true;
-    }
-    else if(param == "-kinect2ir")
-    {
-      topicColor = K2_TOPIC_RECT_IR K2_TOPIC_RAW;
-      topicDepth = K2_TOPIC_RECT_DEPTH K2_TOPIC_RAW;
-      useExact = true;
     }
     else if(param == "-color" && i + 1 < (size_t)argc)
     {

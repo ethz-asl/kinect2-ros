@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-#include <depth_registration.h>
+#include <kinect2_depth_registration/depth_registration.h>
 
 #ifdef DEPTH_REG_CPU
 #include "depth_registration_cpu.h"
@@ -37,7 +37,7 @@ DepthRegistration::~DepthRegistration()
 
 bool DepthRegistration::init(const cv::Mat &cameraMatrixRegistered, const cv::Size &sizeRegistered, const cv::Mat &cameraMatrixDepth, const cv::Size &sizeDepth,
                              const cv::Mat &distortionDepth, const cv::Mat &rotation, const cv::Mat &translation,
-                             const float zNear, const float zFar, const int deviceId)
+                             const float zNear, const float zFar, const int deviceId, const std::map<std::string, std::string>& params)
 {
   this->cameraMatrixRegistered = cameraMatrixRegistered;
   this->cameraMatrixDepth = cameraMatrixDepth;
@@ -50,7 +50,7 @@ bool DepthRegistration::init(const cv::Mat &cameraMatrixRegistered, const cv::Si
 
   cv::initUndistortRectifyMap(cameraMatrixDepth, distortionDepth, cv::Mat(), cameraMatrixRegistered, sizeRegistered, CV_32FC1, mapX, mapY);
 
-  return init(deviceId);
+  return init(deviceId, params);
 }
 
 DepthRegistration *DepthRegistration::New(Method method)

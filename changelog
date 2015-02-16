@@ -1,0 +1,437 @@
+kinect2-ros (0.0.1-62) unstable; urgency=low
+
+  * kinect2:
+    + Renamed meta-package
+    + Fixed names of dependent packages
+  * kinect2_bridge:
+    + OpenCL source filename is now a command-line parameter
+    + Added glfwInit() call to fix failure of OpenGL context initialization
+    + Changed names of topic base and compressed depth topic
+    + Depth registration is now optional
+    + Depth scale may now be set from the command line
+    + Added kinect2_bridge dependency on libfreenect2-udev
+    + Added command-line options for selecting depth processing and
+      depth registration pipelines
+    + Fixed calibration path handling (removed pre-processor definitions)
+    + Fixed includes to comply with ROS standards
+    + Removed README.md from other files list
+    + Added install rules
+    + Added find_package() macro call for PkgConfig
+  * kinect2_calibration
+    + Added install rules
+    + Fixed includes to comply with ROS standards
+  * kinect2_depth_registration:
+    + Added patch to pass OpenCL source filename as parameter
+    + Fixed includes to comply with ROS standards
+    + Added install rules
+    + Added -msse2 compiler flag
+  * kinect2_registration_viewer
+    + Removed topic pre-definitions
+    + Added install rules
+    + Fixed includes to comply with ROS standards
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Mon, 16 Feb 2015 15:16:00 +0100
+
+kinect2-ros (0.0.1-61) unstable; urgency=low
+
+  * used FindOpenCL module from libfreenect2 to locate OpenCL.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 16:05:20 +0100
+
+kinect2-ros (0.0.1-60) unstable; urgency=low
+
+  * changed install instructions
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 13:08:15 +0100
+
+kinect2-ros (0.0.1-59) unstable; urgency=low
+
+  * small fix to README
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 12:57:38 +0100
+
+kinect2-ros (0.0.1-58) unstable; urgency=low
+
+  * fixed README format
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 12:56:33 +0100
+
+kinect2-ros (0.0.1-57) unstable; urgency=low
+
+  * added more detailed installation instructions to README.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 12:54:38 +0100
+
+kinect2-ros (0.0.1-56) unstable; urgency=low
+
+  * updated package dependencies.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 14 Jan 2015 12:54:11 +0100
+
+kinect2-ros (0.0.1-55) unstable; urgency=low
+
+  * simplified adding of opencl libraries in CMakeLists.txt.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 13 Jan 2015 11:41:35 +0100
+
+kinect2-ros (0.0.1-54) unstable; urgency=low
+
+  * added listing of kinect2 devices.
+  * added check for validity of provided serial.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 13 Jan 2015 09:25:06 +0100
+
+kinect2-ros (0.0.1-53) unstable; urgency=low
+
+  * removed changes to libfreenect2 that are obsolete.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 12 Jan 2015 16:35:26 +0100
+
+kinect2-ros (0.0.1-52) unstable; urgency=low
+
+  * use libfreenect2 config file instead of additional defines.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 12 Jan 2015 16:12:05 +0100
+
+kinect2-ros (0.0.1-51) unstable; urgency=low
+
+  * added point cloud publisher to kinect2 launch file.
+  * thanks to Stefanie.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 09 Jan 2015 10:50:20 +0100
+
+kinect2-ros (0.0.1-50) unstable; urgency=low
+
+  * added possibility to select opencl device for depth processing.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 06 Jan 2015 16:32:25 +0100
+
+kinect2-ros (0.0.1-49) unstable; urgency=low
+
+  * mentioned the branch which includes all needed modifications.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 06 Jan 2015 16:31:29 +0100
+
+kinect2-ros (0.0.1-48) unstable; urgency=low
+
+  * added parameter to select openCL device for depth registration.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 06 Jan 2015 14:15:35 +0100
+
+kinect2-ros (0.0.1-47) unstable; urgency=low
+
+  * added possibility to select a specific openCL device.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 06 Jan 2015 14:15:08 +0100
+
+kinect2-ros (0.0.1-46) unstable; urgency=low
+
+  * added instructions for OpenCL on Intel GPUs.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 02 Dec 2014 09:23:43 +0100
+
+kinect2-ros (0.0.1-45) unstable; urgency=low
+
+  * added option to use TIFF as compression method for 16Bit images like
+    depth and ir.
+  * TIFF is much faster but the compression ratio is less good.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 27 Nov 2014 11:33:34 +0100
+
+kinect2-ros (0.0.1-44) unstable; urgency=low
+
+  * build type is not set explicitly anymore.
+  * if c++11 check faild it give an error.
+  * removed unused cmake option from viewer.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 25 Nov 2014 16:04:20 +0100
+
+kinect2-ros (0.0.1-43) unstable; urgency=low
+
+  * fixed issue calibration not responding to ctrl+c when waiting for first
+    images.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 24 Nov 2014 09:47:27 +0100
+
+kinect2-ros (0.0.1-42) unstable; urgency=low
+
+  * changed missleading kernel function name.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 21 Nov 2014 10:30:50 +0100
+
+kinect2-ros (0.0.1-41) unstable; urgency=low
+
+  * added possibility to show depth ir point cloud. Works also without calibrating
+    the sensor.
+  * added parameter to switch to uncompressed image transport.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 21 Nov 2014 10:26:21 +0100
+
+kinect2-ros (0.0.1-40) unstable; urgency=low
+
+  * jpg compression level is changeable through parameter.
+  * used best png depth compression settings (compression ratio / processing
+    time).
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 21 Nov 2014 10:23:19 +0100
+
+kinect2-ros (0.0.1-39) unstable; urgency=low
+
+  * removed opencv remap using opencl.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 20 Nov 2014 13:50:48 +0100
+
+kinect2-ros (0.0.1-38) unstable; urgency=low
+
+  * simplified depth registration.
+  * fixed a small bug in CPU based registration.
+  * renamed some constants.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 20 Nov 2014 13:30:35 +0100
+
+kinect2-ros (0.0.1-37) unstable; urgency=low
+
+  * fix for documentation layout.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 19 Nov 2014 15:16:39 +0100
+
+kinect2-ros (0.0.1-36) unstable; urgency=low
+
+  * added modifications of upstream libfreenect2 to README
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 19 Nov 2014 15:13:24 +0100
+
+kinect2-ros (0.0.1-35) unstable; urgency=low
+
+  * updated README.
+  * changes freenect2_INCLUDE_DIR to freenect2_INCLUDE_DIRS.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 18 Nov 2014 16:06:49 +0100
+
+kinect2-ros (0.0.1-34) unstable; urgency=low
+
+  * added check for c++11 flag support.
+  * switched to upstream libfreenect2.
+  * added option for using libfreenect2 opencl packet pipeline.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 18 Nov 2014 15:55:31 +0100
+
+kinect2-ros (0.0.1-33) unstable; urgency=low
+
+  * Added the possibility to select a camera using the -cam parameter along
+    the serial number of the camera
+
+ -- Jordi <jordi.magdaleno@gmail.com>  Wed, 10 Dec 2014 17:16:58 +0100
+
+kinect2-ros (0.0.1-32) unstable; urgency=low
+
+  * added minimum value for number of worker threads if std::thread::hardware_concurrency() is
+    not returning any valid value.
+  * added cmake options for using opencl depth registration and rectification.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 31 Oct 2014 11:09:36 +0100
+
+kinect2-ros (0.0.1-31) unstable; urgency=low
+
+  * renamed camera_calibration to kinect2_calibration because a package
+    with this name already exists in image_pipeline.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 24 Oct 2014 11:07:59 +0200
+
+kinect2-ros (0.0.1-30) unstable; urgency=low
+
+  * implemented a better device selection. Try to use the first GPU device
+    or if not found try to use first CPU device.
+  * added class and method name to output.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 09 Oct 2014 11:36:32 +0200
+
+kinect2-ros (0.0.1-29) unstable; urgency=low
+
+  * recorder is now running in main thread.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 08 Oct 2014 14:22:58 +0200
+
+kinect2-ros (0.0.1-28) unstable; urgency=low
+
+  * added possibility to use asymmetrical circle grids.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 26 Sep 2014 15:14:09 +0200
+
+kinect2-ros (0.0.1-27) unstable; urgency=low
+
+  * point cloud viewer is now always executed inside main thread.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 26 Sep 2014 13:40:54 +0200
+
+kinect2-ros (0.0.1-26) unstable; urgency=low
+
+  * changes color topic to mono.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 26 Sep 2014 13:14:47 +0200
+
+kinect2-ros (0.0.1-25) unstable; urgency=low
+
+  * fixed issue with cornerSubPix being executed even if no points were
+    detected.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 26 Sep 2014 12:51:59 +0200
+
+kinect2-ros (0.0.1-24) unstable; urgency=low
+
+  * Restoring the correct files when calibrating sync
+
+ -- Jan-Hendrik Worch <jworch@cs.uni-bremen.de>  Tue, 23 Sep 2014 08:45:55 +0200
+
+kinect2-ros (0.0.1-23) unstable; urgency=low
+
+  * Removed leading slash from tf frames. tf2 does not like that
+
+ -- Jan-Hendrik Worch <jworch@cs.uni-bremen.de>  Mon, 22 Sep 2014 16:36:33 +0200
+
+kinect2-ros (0.0.1-22) unstable; urgency=low
+
+  * bugfix: when calibrating ir only, the vector of the board points was
+    sized incorrectly.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 19 Sep 2014 14:52:39 +0200
+
+kinect2-ros (0.0.1-21) unstable; urgency=low
+
+  * Added possibility to launch the kinect with tf
+
+ -- Jan-Hendrik Worch <jworch@cs.uni-bremen.de>  Fri, 19 Sep 2014 11:56:17 +0200
+
+kinect2-ros (0.0.1-20) unstable; urgency=low
+
+  * replaced absolute path by the actual directory for the saving function
+    of the viewer.
+  * viewer and calibration tool now have the same key bindings.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 18 Sep 2014 09:43:56 +0200
+
+kinect2-ros (0.0.1-19) unstable; urgency=low
+
+  * added key binding information to the READMEs.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 18 Sep 2014 09:39:28 +0200
+
+kinect2-ros (0.0.1-18) unstable; urgency=low
+
+  * all files now visible inside qtcreator.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 18 Sep 2014 09:38:56 +0200
+
+kinect2-ros (0.0.1-17) unstable; urgency=low
+
+  * replaced pown function, because it couldn't compile on intel iris.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 14:42:46 +0200
+
+kinect2-ros (0.0.1-16) unstable; urgency=low
+
+  * defines in OpenCL are now passed as options to the compiler instead
+    of adding them to the source code on runtime.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 13:16:03 +0200
+
+kinect2-ros (0.0.1-15) unstable; urgency=low
+
+  * replaced % by %%, because they can get removed by sprintf.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 10:30:27 +0200
+
+kinect2-ros (0.0.1-14) unstable; urgency=low
+
+  * Fix for finding OpenCL on linux.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 10:12:16 +0200
+
+kinect2-ros (0.0.1-13) unstable; urgency=low
+
+  * moved starting of libfreenect device to initialization.
+  * removed unused calibration file entries from loading.
+  * added output of default camera parameters and the ones loaded from the
+    calibration files.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 09:43:37 +0200
+
+kinect2-ros (0.0.1-12) unstable; urgency=low
+
+  * depth registration now only generates one lib that contains the cpu
+    and/or opencl implementation based on detected libraries.
+  * should now work with apple and clang.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 09:40:18 +0200
+
+kinect2-ros (0.0.1-11) unstable; urgency=low
+
+  * doubled ir image size for better pattern detection.
+  * implemented ir value range detection based on last detected board
+    area.
+  * added storing of detected points.
+  * calibration now loads the stored points instead of detecting them again
+    on the images.
+  * some minor performance improvements.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 16 Sep 2014 09:38:05 +0200
+
+kinect2-ros (0.0.1-10) unstable; urgency=low
+
+  * improved information on permissions
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 16:06:10 +0200
+
+kinect2-ros (0.0.1-9) unstable; urgency=low
+
+  * another fix
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 15:45:16 +0200
+
+kinect2-ros (0.0.1-8) unstable; urgency=low
+
+  * another fix to the readme
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 15:40:05 +0200
+
+kinect2-ros (0.0.1-7) unstable; urgency=low
+
+  * small fix
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 15:38:31 +0200
+
+kinect2-ros (0.0.1-6) unstable; urgency=low
+
+  * added information on the permission to access the sensor.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 15:37:46 +0200
+
+kinect2-ros (0.0.1-5) unstable; urgency=low
+
+  * added more information to READMEs
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 15:06:57 +0200
+
+kinect2-ros (0.0.1-4) unstable; urgency=low
+
+  * added screenshots
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 10:27:04 +0200
+
+kinect2-ros (0.0.1-3) unstable; urgency=low
+
+  * added more information to readmes
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 09 Sep 2014 09:15:44 +0200
+
+kinect2-ros (0.0.1-2) unstable; urgency=low
+
+  * moved kinect2 related tools into a new repository.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 08 Sep 2014 17:03:32 +0200
+
+kinect2-ros (0.0.1-1) unstable; urgency=low
+
+  * Initial commit
+
+ -- wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 08 Sep 2014 16:26:17 +0200

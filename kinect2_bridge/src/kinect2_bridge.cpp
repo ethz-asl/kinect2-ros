@@ -21,6 +21,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <map>
 #include <thread>
 #include <mutex>
 #include <chrono>
@@ -38,13 +39,17 @@
 
 #include <compressed_depth_image_transport/compression_common.h>
 
+#if defined(USE_OPENGL_PIPELINE)
+#define GLEW_MX ON
+#include <libfreenect2/opengl.h>
+#endif
 #include <libfreenect2/libfreenect2.hpp>
 #include <libfreenect2/frame_listener_impl.h>
 #include <libfreenect2/packet_pipeline.h>
 #include <libfreenect2/config.h>
 
-#include <kinect2_definitions.h>
-#include <depth_registration.h>
+#include <kinect2_bridge/kinect2_definitions.h>
+#include <kinect2_depth_registration/depth_registration.h>
 
 class Kinect2Bridge
 {
@@ -67,13 +72,13 @@ private:
   cv::Mat map1Color, map2Color;
   cv::Mat map1Ir, map2Ir;
   cv::Mat map1ColorReg, map2ColorReg;
+  cv::Mat map1DepthReg, map2DepthReg;
 
   std::vector<std::thread> threads;
   std::mutex lock;
   std::mutex lockProcess;
   std::mutex lockPub;
-  std::mutex lockRegLowRes;
-  std::mutex lockRegHighRes;
+  std::mutex lockReg;
   size_t pubFrame;
   bool newFrame;
 
@@ -85,10 +90,10 @@ private:
 
   ros::NodeHandle nh;
 
-  DepthRegistration *depthRegLowRes;
-  DepthRegistration *depthRegHighRes;
+  DepthRegistration *depthReg;
 
   const double deltaT;
+  const double scale;
 
   enum Image
   {
@@ -97,16 +102,16 @@ private:
 
     DEPTH,
     DEPTH_RECT,
-    DEPTH_LORES,
-    DEPTH_HIRES,
+    DEPTH_SCALED,
+    DEPTH_SCALED_REG,
 
     COLOR,
     COLOR_RECT,
-    COLOR_LORES,
+    COLOR_SCALED,
 
     MONO,
     MONO_RECT,
-    MONO_LORES,
+    MONO_SCALED,
 
     COUNT
   };
@@ -129,23 +134,39 @@ private:
   std::vector<Status> statusPubs;
 
 public:
-  Kinect2Bridge(const double fps, const bool rawDepth, const int compression, const int deviceIdDepth)
-    : jpegQuality(compression), pngLevel(1), maxDepth(10.0), queueSize(2), rawDepth(rawDepth), sizeColor(1920, 1080), sizeIr(512, 424),
-      sizeDepth(rawDepth ? sizeIr : cv::Size(sizeColor.width / 2, sizeColor.height / 2)), newFrame(false), nh(),
-      deltaT(1.0 / fps), topics(COUNT)
+  enum DepthProc
+  {
+    PROC_CPU = 0,
+    PROC_OPENGL,
+    PROC_OPENCL
+ };
+
+  enum DepthReg
+  {
+    REG_NONE = 0,
+    REG_CPU,
+    REG_OPENCL
+  };
+
+  Kinect2Bridge(const double fps, const double scale, DepthProc depthProc, DepthReg depthReg,
+                const bool rawDepth, const int compression, const int deviceIdDepth)
+    : jpegQuality(compression), pngLevel(1), maxDepth(10.0), queueSize(2),
+      rawDepth(rawDepth), sizeColor(1920, 1080), sizeIr(512, 424),
+      sizeDepth(rawDepth ? sizeIr : cv::Size(sizeColor.width * scale, sizeColor.height * scale)),
+      newFrame(false), nh(), depthReg(0), deltaT(1.0 / fps), scale(scale), topics(COUNT)
   {
     topics[IR] = K2_TOPIC_IMAGE_IR;
     topics[IR_RECT] = K2_TOPIC_RECT_IR;
     topics[DEPTH] = K2_TOPIC_IMAGE_DEPTH;
     topics[DEPTH_RECT] = K2_TOPIC_RECT_DEPTH;
-    topics[DEPTH_LORES] = K2_TOPIC_LORES_DEPTH;
-    topics[DEPTH_HIRES] = K2_TOPIC_HIRES_DEPTH;
+    topics[DEPTH_SCALED] = K2_TOPIC_SCALED_DEPTH;
+    topics[DEPTH_SCALED_REG] = K2_TOPIC_SCALED_REG_DEPTH;
     topics[COLOR] = K2_TOPIC_IMAGE_COLOR;
     topics[COLOR_RECT] = K2_TOPIC_RECT_COLOR;
-    topics[COLOR_LORES] = K2_TOPIC_LORES_COLOR;
+    topics[COLOR_SCALED] = K2_TOPIC_SCALED_COLOR;
     topics[MONO] = K2_TOPIC_IMAGE_MONO;
     topics[MONO_RECT] = K2_TOPIC_RECT_MONO;
-    topics[MONO_LORES] = K2_TOPIC_LORES_MONO;
+    topics[MONO_SCALED] = K2_TOPIC_SCALED_MONO;
 
     color = cv::Mat::zeros(sizeColor, CV_8UC3);
     ir = cv::Mat::zeros(sizeIr, CV_32F);
@@ -160,18 +181,39 @@ public:
     compressionParams[5] = CV_IMWRITE_PNG_STRATEGY_RLE;
     compressionParams[6] = 0;
 
+    if (depthProc == PROC_OPENGL) {
+#if defined(USE_OPENGL_PIPELINE)
+      glfwInit();
+      packetPipeline = new libfreenect2::OpenGLPacketPipeline();
+#else
+      std::cerr << "Warning: OpenGL depth processing pipeline not supported, using CPU instead!" << std::endl;
+      depthProc = PROC_CPU;
+#endif
+    }
+    if (depthProc == PROC_OPENCL) {
+#if defined(USE_OPENCL_PIPELINE)
+      packetPipeline = new libfreenect2::OpenCLPacketPipeline(deviceIdDepth);
+#else
+      std::cerr << "Warning: OpenCL depth processing pipeline not supported, using CPU instead!" << std::endl;
+      depthProc = PROC_CPU;
+#endif
+    }
+    if (depthProc == PROC_CPU) {
+      packetPipeline = new libfreenect2::CpuPacketPipeline();
+    }
+    
+    if (depthReg == REG_OPENCL) {
 #ifdef USE_OPENCL_REGISTRATION
-    depthRegLowRes = DepthRegistration::New(DepthRegistration::OPENCL);
-    depthRegHighRes = DepthRegistration::New(DepthRegistration::OPENCL);
+      this->depthReg = DepthRegistration::New(DepthRegistration::OPENCL);
 #else
-    depthRegLowRes = DepthRegistration::New(DepthRegistration::CPU);
-    depthRegHighRes = DepthRegistration::New(DepthRegistration::CPU);
+      std::cerr << "Warning: OpenCL depth registration pipeline not supported, using CPU instead!" << std::endl;
+      depthReg = REG_CPU;
 #endif
-#if defined(USE_OPENCL_PIPELINE) && defined(LIBFREENECT2_WITH_OPENCL_SUPPORT)
-    packetPipeline = new libfreenect2::OpenCLPacketPipeline(deviceIdDepth);
-#else
-    packetPipeline = new libfreenect2::DefaultPacketPipeline();
-#endif
+    }
+    if (depthReg == REG_CPU) {
+      this->depthReg = DepthRegistration::New(DepthRegistration::CPU);
+    }
+
 #ifdef USE_TIFF_COMRESSION
     compression16BitExt = ".tiff";
     compression16BitString = "; tiff compressed ";
@@ -181,7 +223,7 @@ public:
 #endif
   }
 
-  bool init(const std::string &path, const std::string &cam, const int deviceIdReg)
+  bool init(const std::string &path, const std::string &cam, const int deviceIdReg, const std::map<std::string, std::string>& params)
   {
     std::string camSerial = cam;
     bool deviceFound = false;
@@ -241,12 +283,6 @@ public:
     std::cout << std::endl << "default color camera parameters: " << std::endl;
     std::cout << "fx " << colorParams.fx << ", fy " << colorParams.fy << ", cx " << colorParams.cx << ", cy " << colorParams.cy << std::endl;
 
-    /*std::cout << "unknown color camera parameters: " << std::endl;
-    for(size_t i = 3; i < 25; ++i)
-    {
-      std::cout << i + 1 << ": " << colorParams.all[i] << std::endl;
-    }*/
-
     std::string calibPath = path + serial;
 
     struct stat fileStat;
@@ -291,10 +327,10 @@ public:
     else
     {
       cameraMatrixDepth = cameraMatrixColor.clone();
-      cameraMatrixDepth.at<double>(0, 0) /= 2;
-      cameraMatrixDepth.at<double>(1, 1) /= 2;
-      cameraMatrixDepth.at<double>(0, 2) /= 2;
-      cameraMatrixDepth.at<double>(1, 2) /= 2;
+      cameraMatrixDepth.at<double>(0, 0) *= scale;
+      cameraMatrixDepth.at<double>(1, 1) *= scale;
+      cameraMatrixDepth.at<double>(0, 2) *= scale;
+      cameraMatrixDepth.at<double>(1, 2) *= scale;
     }
 
     std::cout << std::endl << "camera parameters used:" << std::endl
@@ -309,10 +345,12 @@ public:
     cv::initUndistortRectifyMap(cameraMatrixColor, distortionColor, cv::Mat(), cameraMatrixColor, sizeColor, mapType, map1Color, map2Color);
     cv::initUndistortRectifyMap(cameraMatrixIr, distortionIr, cv::Mat(), cameraMatrixIr, sizeIr, mapType, map1Ir, map2Ir);
     cv::initUndistortRectifyMap(cameraMatrixColor, distortionColor, cv::Mat(), cameraMatrixDepth, sizeDepth, mapType, map1ColorReg, map2ColorReg);
+    cv::initUndistortRectifyMap(cameraMatrixIr, distortionIr, cv::Mat(), cameraMatrixDepth, sizeDepth, mapType, map1DepthReg, map2DepthReg);
 
     bool ret = true;
-    ret = ret && depthRegLowRes->init(cameraMatrixDepth, sizeDepth, cameraMatrixIr, sizeIr, distortionIr, rotation, translation, 0.5f, maxDepth, deviceIdReg);
-    ret = ret && depthRegHighRes->init(cameraMatrixColor, sizeColor, cameraMatrixIr, sizeIr, distortionIr, rotation, translation, 0.5f, maxDepth, deviceIdReg);
+    if (depthReg) {
+      ret = depthReg->init(cameraMatrixDepth, sizeDepth, cameraMatrixIr, sizeIr, distortionIr, rotation, translation, 0.5f, maxDepth, deviceIdReg, params);
+    }
 
     return ret;
   }
@@ -330,7 +368,7 @@ public:
 
     for(size_t i = 0; i < COUNT; ++i)
     {
-      if(i < DEPTH || i > DEPTH_HIRES)
+      if(i < DEPTH || i > DEPTH_SCALED_REG)
       {
         imagePubs[i] = nh.advertise<sensor_msgs::Image>(topics[i] + K2_TOPIC_IMAGE, queueSize);
         compressedPubs[i] = nh.advertise<sensor_msgs::CompressedImage>(topics[i] + K2_TOPIC_RAW + K2_TOPIC_COMPRESSED, queueSize);
@@ -536,13 +574,13 @@ private:
     createCameraInfo(sizeColor, cameraMatrixColor, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projColor, infos[COLOR_RECT]);
     createCameraInfo(sizeColor, cameraMatrixColor, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projColor, infos[MONO_RECT]);
     createCameraInfo(sizeIr, cameraMatrixIr, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projIr, infos[IR_RECT]);
+    createCameraInfo(sizeIr, cameraMatrixIr, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[DEPTH_RECT]);
 
-    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[DEPTH_RECT]);
-    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[COLOR_LORES]);
-    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[MONO_LORES]);
-    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[DEPTH_LORES]);
+    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[COLOR_SCALED]);
+    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[MONO_SCALED]);
+    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[DEPTH_SCALED]);
 
-    createCameraInfo(sizeColor, cameraMatrixColor, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projColor, infos[DEPTH_HIRES]);
+    createCameraInfo(sizeDepth, cameraMatrixDepth, cv::Mat::zeros(1, 5, CV_64F), cv::Mat::eye(3, 3, CV_64F), projDepth, infos[DEPTH_SCALED_REG]);
   }
 
   void createCameraInfo(const cv::Size &size, const cv::Mat &cameraMatrix, const cv::Mat &distortion, const cv::Mat &rotation, const cv::Mat &projection, sensor_msgs::CameraInfo &cameraInfo) const
@@ -611,7 +649,7 @@ private:
     }
 
     // DEPTH
-    if(status[DEPTH] || status[DEPTH_RECT] || status[DEPTH_LORES] || status[DEPTH_HIRES])
+    if(status[DEPTH] || status[DEPTH_RECT] || status[DEPTH_SCALED] || (depthReg && status[DEPTH_SCALED_REG]))
     {
       depth.convertTo(images[DEPTH], CV_16U);
     }
@@ -619,17 +657,15 @@ private:
     {
       cv::remap(images[DEPTH], images[DEPTH_RECT], map1Ir, map2Ir, cv::INTER_NEAREST);
     }
-    if(status[DEPTH_LORES])
+    if(status[DEPTH_SCALED])
     {
-      lockRegLowRes.lock();
-      depthRegLowRes->registerDepth(images[DEPTH], images[DEPTH_LORES]);
-      lockRegLowRes.unlock();
+      cv::remap(images[DEPTH], images[DEPTH_SCALED], map1DepthReg, map2DepthReg, cv::INTER_NEAREST);
     }
-    if(status[DEPTH_HIRES])
+    if(depthReg && status[DEPTH_SCALED_REG])
     {
-      lockRegHighRes.lock();
-      depthRegHighRes->registerDepth(images[DEPTH], images[DEPTH_HIRES]);
-      lockRegHighRes.unlock();
+      lockReg.lock();
+      depthReg->registerDepth(images[DEPTH], images[DEPTH_SCALED_REG]);
+      lockReg.unlock();
     }
 
     // COLOR
@@ -638,9 +674,9 @@ private:
     {
       cv::remap(images[COLOR], images[COLOR_RECT], map1Color, map2Color, cv::INTER_AREA);
     }
-    if(status[COLOR_LORES] || status[MONO_LORES])
+    if(status[COLOR_SCALED] || status[MONO_SCALED])
     {
-      cv::remap(images[COLOR], images[COLOR_LORES], map1ColorReg, map2ColorReg, cv::INTER_AREA);
+      cv::remap(images[COLOR], images[COLOR_SCALED], map1ColorReg, map2ColorReg, cv::INTER_AREA);
     }
 
     // MONO
@@ -652,9 +688,9 @@ private:
     {
       cv::cvtColor(images[COLOR_RECT], images[MONO_RECT], CV_BGR2GRAY);
     }
-    if(status[MONO_LORES])
+    if(status[MONO_SCALED])
     {
-      cv::cvtColor(images[COLOR_LORES], images[MONO_LORES], CV_BGR2GRAY);
+      cv::cvtColor(images[COLOR_SCALED], images[MONO_SCALED], CV_BGR2GRAY);
     }
   }
 
@@ -676,7 +712,7 @@ private:
     {
       infoMsgs[i] = infos[i];
       infoMsgs[i].header = header;
-      infoMsgs[i].header.frame_id = i < DEPTH_LORES ? K2_TF_IR_FRAME : K2_TF_RGB_FRAME;
+      infoMsgs[i].header.frame_id = i < DEPTH_SCALED ? K2_TF_IR_FRAME : K2_TF_RGB_FRAME;
 
       switch(status[i])
       {
@@ -744,18 +780,18 @@ private:
       break;
     case DEPTH:
     case DEPTH_RECT:
-    case DEPTH_LORES:
-    case DEPTH_HIRES:
+    case DEPTH_SCALED:
+    case DEPTH_SCALED_REG:
       msgImage.encoding = sensor_msgs::image_encodings::TYPE_16UC1;
       break;
     case COLOR:
     case COLOR_RECT:
-    case COLOR_LORES:
+    case COLOR_SCALED:
       msgImage.encoding = sensor_msgs::image_encodings::BGR8;
       break;
     case MONO:
     case MONO_RECT:
-    case MONO_LORES:
+    case MONO_SCALED:
       msgImage.encoding = sensor_msgs::image_encodings::MONO8;
       break;
     case COUNT:
@@ -784,8 +820,8 @@ private:
       break;
     case DEPTH:
     case DEPTH_RECT:
-    case DEPTH_LORES:
-    case DEPTH_HIRES:
+    case DEPTH_SCALED:
+    case DEPTH_SCALED_REG:
       {
         compressed_depth_image_transport::ConfigHeader compressionConfig;
         const size_t headerSize = sizeof(compressed_depth_image_transport::ConfigHeader);
@@ -802,13 +838,13 @@ private:
       }
     case COLOR:
     case COLOR_RECT:
-    case COLOR_LORES:
+    case COLOR_SCALED:
       msgImage.format = sensor_msgs::image_encodings::BGR8 + "; jpeg compressed bgr8";
       cv::imencode(".jpg", image, msgImage.data, compressionParams);
       break;
     case MONO:
     case MONO_RECT:
-    case MONO_LORES:
+    case MONO_SCALED:
       msgImage.format = sensor_msgs::image_encodings::MONO8 + "; png compressed ";
       cv::imencode(".png", image, msgImage.data, compressionParams);
       break;
@@ -821,30 +857,33 @@ private:
 void help(const std::string &path)
 {
   std::cout << path << " [options]" << std::endl
-            << "  -fps <num>       limit the frames per second to <num> (float)" << std::endl
-            << "  -calib <path>    path to the calibration files" << std::endl
-            << "  -raw             output raw depth image as 512x424 instead of 960x540" << std::endl
-            << "  -comp <num>      jpg compression level from 0 to 100 (default 90)." << std::endl
-            << "  -oclDev <num>    openCL device to use for depth registration and processing." << std::endl
-            << "  -oclReg <num>    openCL device to use for depth registration." << std::endl
-            << "  -oclDepth <num>  openCL device to use for depth processing." << std::endl;
+            << "  -fps <num>               limit the frames per second to <num> (float)" << std::endl
+            << "  -scale <num|raw>         scale all image data by <num> (float) or raw depth (default raw)" << std::endl
+            << "  -calib <path>            path to the calibration files" << std::endl
+            << "  -depthProc <cpu|gl|cl>   pipeline to use for depth processing (default cpu)" << std::endl
+            << "  -depthReg <none|cpu|cl>  pipeline to use for depth registration (default none)" << std::endl
+            << "  -comp <num>              jpg compression level from 0 to 100 (default 90)." << std::endl
+            << "  -clDev <num>             openCL device to use for depth registration and processing." << std::endl
+            << "  -clReg <num>             openCL device to use for depth registration." << std::endl
+            << "  -clRegSource <num>       openCL source filename to use for depth registration." << std::endl
+            << "  -clDepth <num>           openCL device to use for depth processing." << std::endl;
 }
 
 int main(int argc, char **argv)
 {
   ros::init(argc, argv, "kinect2_bridge");
 
-#ifdef K2_CALIB_PATH
-  std::string path = K2_CALIB_PATH;
-#else
   std::string path = "";
-#endif
   std::string cam = "";
   double fps = -1;
+  double scale = 1;
+  Kinect2Bridge::DepthProc depthProc = Kinect2Bridge::PROC_CPU;
+  Kinect2Bridge::DepthReg depthReg = Kinect2Bridge::REG_NONE;
   bool rawDepth = false;
   int compression = 90;
   int deviceIdReg = -1;
   int deviceIdDepth = -1;
+  std::map<std::string, std::string> params;
 
   for(int argI = 1; argI < argc; ++argI)
   {
@@ -871,6 +910,20 @@ int main(int argc, char **argv)
     {
       fps = atof(argv[++argI]);
     }
+    else if(arg == "-scale" && argI + 1 < argc)
+    {
+      if(++argI < argc) {
+        if (std::string(argv[argI]) == "raw")
+          rawDepth = true;
+        else
+          scale = atof(argv[argI]);
+      }
+      else
+      {
+        std::cerr << "Scale not given!" << std::endl;
+        return -1;
+      }
+    }
     else if(arg == "-comp" && argI + 1 < argc)
     {
       compression = std::max(0, std::min(100, atoi(argv[++argI])));
@@ -887,7 +940,49 @@ int main(int argc, char **argv)
         return -1;
       }
     }
-    else if(arg == "-oclReg")
+    else if(arg == "-depthProc")
+    {
+      if(++argI < argc)
+      {
+        if (std::string(argv[argI]) == "cpu")
+          depthProc = Kinect2Bridge::PROC_CPU;
+        else if (std::string(argv[argI]) == "gl")
+          depthProc = Kinect2Bridge::PROC_OPENGL;
+        else if (std::string(argv[argI]) == "cl")
+          depthProc = Kinect2Bridge::PROC_OPENCL;
+        else {
+          std::cerr << "Depth processing pipeline invalid!" << std::endl;
+          return -1;
+        }
+      }
+      else
+      {
+        std::cerr << "Depth processing pipeline not given!" << std::endl;
+        return -1;
+      }
+    }
+    else if(arg == "-depthReg")
+    {
+      if(++argI < argc)
+      {
+        if (std::string(argv[argI]) == "none")
+          depthReg = Kinect2Bridge::REG_NONE;
+        else if (std::string(argv[argI]) == "cpu")
+          depthReg = Kinect2Bridge::REG_CPU;
+        else if (std::string(argv[argI]) == "cl")
+          depthReg = Kinect2Bridge::REG_OPENCL;
+        else {
+          std::cerr << "Depth registration pipeline invalid!" << std::endl;
+          return -1;
+        }
+      }
+      else
+      {
+        std::cerr << "Depth registration pipeline not given!" << std::endl;
+        return -1;
+      }
+    }
+    else if(arg == "-clReg")
     {
       if(++argI < argc)
       {
@@ -899,7 +994,19 @@ int main(int argc, char **argv)
         return -1;
       }
     }
-    else if(arg == "-oclDepth")
+    else if(arg == "-clRegSource")
+    {
+      if(++argI < argc)
+      {
+        params["clSource"] = argv[argI];
+      }
+      else
+      {
+        std::cerr << "Depth registration source filename not given!" << std::endl;
+        return -1;
+      }
+    }
+    else if(arg == "-clDepth")
     {
       if(++argI < argc)
       {
@@ -911,7 +1018,7 @@ int main(int argc, char **argv)
         return -1;
       }
     }
-    else if(arg == "-oclDev")
+    else if(arg == "-clDev")
     {
       if(++argI < argc)
       {
@@ -923,10 +1030,6 @@ int main(int argc, char **argv)
         std::cerr << "Device ID not given!" << std::endl;
         return -1;
       }
-    }
-    else if(arg == "-raw")
-    {
-      rawDepth = true;
     }
   }
 
@@ -943,9 +1046,9 @@ int main(int argc, char **argv)
     return -1;
   }
 
-  Kinect2Bridge kinect2(fps, rawDepth, compression, deviceIdDepth);
+  Kinect2Bridge kinect2(fps, scale, depthProc, depthReg, rawDepth, compression, deviceIdDepth);
 
-  if(kinect2.init(path, cam, deviceIdReg))
+  if(kinect2.init(path, cam, deviceIdReg, params))
   {
     kinect2.run();
   }

@@ -16,31 +16,36 @@
  */
 
 #pragma once
-#ifndef __DEPTH_REGISTRATION_OPENCL_H__
-#define __DEPTH_REGISTRATION_OPENCL_H__
+#ifndef __DEPTH_REGISTRATION_CPU_H__
+#define __DEPTH_REGISTRATION_CPU_H__
 
-#include <depth_registration.h>
+#include <Eigen/Geometry>
 
-class DepthRegistrationOpenCL : public DepthRegistration
+#include <kinect2_depth_registration/depth_registration.h>
+
+class DepthRegistrationCPU : public DepthRegistration
 {
 private:
-  struct OCLData;
-
-  OCLData *data;
+  cv::Mat lookupX, lookupY;
+  Eigen::Matrix4d proj;
+  double fx, fy, cx, cy;
 
 public:
-  DepthRegistrationOpenCL();
+  DepthRegistrationCPU();
 
-  ~DepthRegistrationOpenCL();
+  ~DepthRegistrationCPU();
 
-  bool init(const int deviceId);
+  bool init(const int deviceId, const std::map<std::string, std::string>& params);
 
   void registerDepth(const cv::Mat &depth, cv::Mat &registered);
 
 private:
-  void generateOptions(std::string &options) const;
+  void createLookup();
 
-  bool readProgram(std::string &source) const;
+  uint16_t interpolate(const cv::Mat &in, const float &x, const float &y) const;
+
+  void remapDepth(const cv::Mat &depth, cv::Mat &scaled) const;
+  void projectDepth(const cv::Mat &scaled, cv::Mat &registered) const;
 };
 
-#endif //__DEPTH_REGISTRATION_OPENCL_H__
+#endif //__DEPTH_REGISTRATION_CPU_H__
