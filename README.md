@@ -39,7 +39,7 @@ If you use this work in an academic context, please cite the following publicati
 
 P. Fankhauser, M. Bloesch, D. Rodriguez, R. Kaestner, M. Hutter, and R. Siegwart,
 **"Kinect v2 for Mobile Robot Navigation: Evaluation and Modeling"**,
-in IEEE International Conference on Advanced Robotics (ICAR), 2015. (submitted) ([PDF Draft](http://designfankhauser.ch/files/fankhauser_2014_kinect_v2.pdf))
+in IEEE International Conference on Advanced Robotics (ICAR), 2015. (submitted) ([PDF Draft](http://leggedrobotics.ethz.ch/lib/exe/fetch.php?media=research:kinect_v2_evaluation_draft.pdf))
 
     @inproceedings{Fankhauser2015KinectV2ForMobileRobotNavigation,
       author = {Fankhauser, Péter and Bloesch, Michael and Rodriguez, Diego and and Kaestner, Ralf and Hutter, Marco and Siegwart, Roland},
