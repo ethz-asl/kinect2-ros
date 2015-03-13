@@ -176,6 +176,46 @@ may attempt to build this project using catkin as follows:
 
     roslaunch kinect2_bridge kinect2_bridge.launch
 
+There are several options to configure the kinect2_bridge. These can be set as argument, for example
+
+    roslaunch kinect2_bridge kinect2_bridge.launch publish_frame:=true fps:=10
+
+
+Available options are:
+
+- **`publish_frame`** (<bool>, default: false)
+
+	Set to true to publish the tf frames.
+	
+- **`fps`** (<int>, default: -1)
+
+	Limiting the frame rate (frames per second). Set to -1 for unlimited.
+
+- **`scale`** ("raw"|<float>, default: "raw")
+
+	Change the scale of the color and depth images. If float applies scale to color images and scales the depth images to the same resolution. If "raw" use the native resolution of both image streams.
+	
+- **`calib_path`** (<string>, default: "$(find kinect2_bridge)/data/")
+
+	Path to calibration files.
+
+- **`depth_proc_pipeline`** ("cpu" | "gl" | "cl", default: "cpu")
+
+	Depth processing pipeline.
+	
+- **`depth_reg`** (<bool>, default: false)
+
+	Set true to activate the depth/color registration.
+
+- **`depth_reg_pipeline`** ("cpu" | "cl", default: "cpu")
+
+	Depth/color registration pipeline.
+
+- **`depth_reg_cl_source`** (<string>, default: "$(find kinect2_depth_registration)/cl/depth_registration.cl")
+
+	Path to the depth registration cl program.
+
+
 For common pitfalls check [this list from libfreenect2](https://github.com/ethz-asl/libfreenect2/blob/remake/README.md#common-pitfalls).
 
 ## API documentation
