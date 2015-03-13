@@ -183,7 +183,7 @@ There are several options to configure the kinect2_bridge. These can be set as a
 
 Available options are:
 
-- **`publish_frame`** (<bool>, default: false)
+- **`publish_frame`** (\<bool>, default: false)
 
 	Set to true to publish the tf frames.
 	
