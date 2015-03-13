@@ -176,7 +176,7 @@ may attempt to build this project using catkin as follows:
 
     roslaunch kinect2_bridge kinect2_bridge.launch
 
-For common pitfalls check [this list from libfreenect2](https://github.com/ethz-asl/libfreenect2).
+For common pitfalls check [this list from libfreenect2](https://github.com/ethz-asl/libfreenect2/blob/remake/README.md#common-pitfalls).
 
 ## API documentation
 
