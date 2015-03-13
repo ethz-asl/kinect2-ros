@@ -187,15 +187,15 @@ Available options are:
 
 	Set to true to publish the tf frames.
 	
-- **`fps`** (<int>, default: -1)
+- **`fps`** (\<int>, default: -1)
 
 	Limiting the frame rate (frames per second). Set to -1 for unlimited.
 
-- **`scale`** ("raw"|<float>, default: "raw")
+- **`scale`** ("raw"|\<float>, default: "raw")
 
 	Change the scale of the color and depth images. If float applies scale to color images and scales the depth images to the same resolution. If "raw" use the native resolution of both image streams.
 	
-- **`calib_path`** (<string>, default: "$(find kinect2_bridge)/data/")
+- **`calib_path`** (\<string>, default: "$(find kinect2_bridge)/data/")
 
 	Path to calibration files.
 
@@ -203,7 +203,7 @@ Available options are:
 
 	Depth processing pipeline.
 	
-- **`depth_reg`** (<bool>, default: false)
+- **`depth_reg`** (\<bool>, default: false)
 
 	Set true to activate the depth/color registration.
 
@@ -211,7 +211,7 @@ Available options are:
 
 	Depth/color registration pipeline.
 
-- **`depth_reg_cl_source`** (<string>, default: "$(find kinect2_depth_registration)/cl/depth_registration.cl")
+- **`depth_reg_cl_source`** (\<string>, default: "$(find kinect2_depth_registration)/cl/depth_registration.cl")
 
 	Path to the depth registration cl program.
 
