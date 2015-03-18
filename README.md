@@ -191,7 +191,7 @@ Commonly used options are:
 
   Limiting the frame rate (frames per second). Set to -1 for unlimited.
 
-- **`scale`** (\<float>, default: "-1")
+- **`scale`** (\<float>, default: -1)
 
   If greater than zero, apply scale to yield scaled color and depth image
   topics. Otherwise, scaled color and depth image topics have the native
