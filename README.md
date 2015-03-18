@@ -178,7 +178,7 @@ may attempt to build this project using catkin as follows:
 
 There are several options to configure the kinect2_bridge. These can be set as argument, for example
 
-    roslaunch kinect2_bridge kinect2_bridge.launch publish_frame:=true fps:=10
+    roslaunch kinect2_bridge kinect2_bridge.launch publish_tf:=true fps_limit:=10
 
 
 Commonly used options are:
