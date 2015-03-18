@@ -187,7 +187,7 @@ Commonly used options are:
 
   Set to true to publish the tf frames.
 
-- **`fps_limit`** (\<int>, default: -1)
+- **`fps_limit`** (\<float>, default: -1)
 
   Limiting the frame rate (frames per second). Set to -1 for unlimited.
 
