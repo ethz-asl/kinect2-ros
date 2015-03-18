@@ -154,9 +154,9 @@ bool DepthRegistrationOpenCL::init(const int deviceId, const std::map<std::strin
   std::string sourceFilename = "depth_registration.cl";
   std::string sourceCode;
 
-  if(params.find("clSource") != params.end())
+  if(params.find("cl_source") != params.end())
   {
-    sourceFilename = params.find("clSource")->second;
+    sourceFilename = params.find("cl_source")->second;
   }
 
   if(!readProgram(sourceFilename, sourceCode))
@@ -310,6 +310,9 @@ void DepthRegistrationOpenCL::registerDepth(const cv::Mat &depth, cv::Mat &regis
     eventZero.wait();
 
     data->queue.enqueueNDRangeKernel(data->kernelProject, cl::NullRange, range, cl::NullRange, NULL, &eventKernel);
+    eventKernel.wait();
+
+    data->queue.enqueueNDRangeKernel(data->kernelCheckDepth, cl::NullRange, range, cl::NullRange, NULL, &eventKernel);
     eventKernel.wait();
 
     data->queue.enqueueNDRangeKernel(data->kernelCheckDepth, cl::NullRange, range, cl::NullRange, NULL, &eventKernel);

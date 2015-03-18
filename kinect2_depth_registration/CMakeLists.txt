@@ -1,26 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(kinect2_depth_registration)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DBT_USE_DOUBLE_PRECISION -Wall")
-# Unused warnings
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wuninitialized -Winit-self -Wunused-function -Wunused-label -Wunused-variable -Wunused-but-set-variable -Wunused-but-set-parameter")
-# Additional warnings
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Warray-bounds -Wtype-limits -Wreturn-type -Wsequence-point -Wparentheses -Wmissing-braces -Wchar-subscripts -Wswitch -Wwrite-strings -Wenum-compare -Wempty-body -Wlogical-op")
-
-# Check for c++11 support
-INCLUDE(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
-IF(COMPILER_SUPPORTS_CXX11)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -msse2")
-ELSEIF(COMPILER_SUPPORTS_CXX0X)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x -msse2")
-ELSE()
-  MESSAGE(ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-ENDIF()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # additional cmake modules
-LIST(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake_modules)
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 find_package(catkin REQUIRED COMPONENTS roscpp)
 find_package(cmake_modules QUIET)
@@ -79,6 +63,7 @@ catkin_package(
   LIBRARIES depth_registration
 #  CATKIN_DEPENDS other_catkin_pkg
 #  DEPENDS system_lib
+  CFG_EXTRAS depth_registration.cmake
 )
 
 ###########
@@ -148,8 +133,8 @@ install(DIRECTORY include/${PROJECT_NAME}/
 )
 
 ## Mark other files for installation (e.g. launch and bag files, etc.)
-install(FILES src/depth_registration.cl
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/cl
+install(DIRECTORY opencl/
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/opencl
 )
 
 #############
