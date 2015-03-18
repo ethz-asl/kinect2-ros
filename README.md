@@ -181,42 +181,43 @@ There are several options to configure the kinect2_bridge. These can be set as a
     roslaunch kinect2_bridge kinect2_bridge.launch publish_frame:=true fps:=10
 
 
-Available options are:
+Commonly used options are:
 
-- **`publish_frame`** (\<bool>, default: false)
+- **`publish_tf`** (\<bool>, default: false)
 
-	Set to true to publish the tf frames.
-	
-- **`fps`** (\<int>, default: -1)
+  Set to true to publish the tf frames.
 
-	Limiting the frame rate (frames per second). Set to -1 for unlimited.
+- **`fps_limit`** (\<int>, default: -1)
 
-- **`scale`** ("raw"|\<float>, default: "raw")
+  Limiting the frame rate (frames per second). Set to -1 for unlimited.
 
-	Change the scale of the color and depth images. If float applies scale to color images and scales the depth images to the same resolution. If "raw" use the native resolution of both image streams.
-	
+- **`scale`** (\<float>, default: "-1")
+
+  If greater than zero, apply scale to yield scaled color and depth image
+  topics. Otherwise, scaled color and depth image topics have the native
+  resolution of each image stream.
+
 - **`calib_path`** (\<string>, default: "$(find kinect2_bridge)/data/")
 
-	Path to calibration files.
+  Path to calibration files.
 
-- **`depth_proc_pipeline`** ("cpu" | "gl" | "cl", default: "cpu")
+- **`depth_method`** (default|cpu|opengl|opencl, default: default)
 
-	Depth processing pipeline.
-	
-- **`depth_reg`** (\<bool>, default: false)
+  Selects the depth processing method.
 
-	Set true to activate the depth/color registration.
+- **`reg_enabled`** (\<bool>, default: false)
 
-- **`depth_reg_pipeline`** ("cpu" | "cl", default: "cpu")
+  Set to true to activate depth/color registration.
 
-	Depth/color registration pipeline.
+- **`reg_method`** (default|cpu|opencl, default: default)
 
-- **`depth_reg_cl_source`** (\<string>, default: "$(find kinect2_depth_registration)/cl/depth_registration.cl")
+  Selects the depth/color registration method.
 
-	Path to the depth registration cl program.
+- **`reg_cl_source`** (\<string>, default: "$(find kinect2_depth_registration)/opencl/depth_registration.cl")
 
+  Path to the OpenCL program for depth/color registration.
 
-For common pitfalls check [this list from libfreenect2](https://github.com/ethz-asl/libfreenect2/blob/remake/README.md#common-pitfalls).
+For common pitfalls, check out [this list from libfreenect2](https://github.com/ethz-asl/libfreenect2/blob/remake/README.md#common-pitfalls).
 
 ## API documentation
 
