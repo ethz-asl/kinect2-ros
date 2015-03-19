@@ -71,7 +71,7 @@ add_library(kinect2_bridge_nodelet SHARED src/kinect2_bridge.cpp)
 target_link_libraries(kinect2_bridge_nodelet
   ${catkin_LIBRARIES}
   ${OpenCV_LIBRARIES}
-  ${FREENECT2_LIBRARY}
+  ${FREENECT2_LIBRARIES}
 )
 
 add_executable(kinect2_bridge src/kinect2_bridge.cpp)

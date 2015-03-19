@@ -205,7 +205,7 @@ Commonly used options are:
 
   Selects the depth processing method.
 
-- **`reg_enabled`** (\<bool>, default: false)
+- **`reg_enabled`** (\<bool>, default: true)
 
   Set to true to activate depth/color registration.
 

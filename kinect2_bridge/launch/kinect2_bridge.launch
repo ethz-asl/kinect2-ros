@@ -13,7 +13,7 @@
   <arg name="png_level"         default="1"/>
   <arg name="depth_method"      default="default"/>
   <arg name="depth_device"      default="-1"/>
-  <arg name="reg_enabled"       default="false" />
+  <arg name="reg_enabled"       default="true" />
   <arg name="reg_method"        default="default"/>
   <arg name="reg_device"        default="-1"/>
   <arg name="reg_cl_source"     default="$(find kinect2_depth_registration)/opencl/depth_registration.cl"/>

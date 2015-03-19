@@ -46,6 +46,11 @@
 #include <libfreenect2/packet_pipeline.h>
 #include <libfreenect2/config.h>
 
+#ifdef LIBFREENECT2_WITH_OPENGL_SUPPORT
+#define GLEW_MX ON
+#include <libfreenect2/opengl.h>
+#endif
+
 #include <kinect2_bridge/kinect2_definitions.h>
 #include <kinect2_depth_registration/depth_registration.h>
 
@@ -123,7 +128,8 @@ private:
 public:
   Kinect2Bridge(const ros::NodeHandle &nh = ros::NodeHandle("~"))
     : sizeColor(1920, 1080), sizeIr(512, 424), sizeLowRes(sizeColor.width / 2, sizeColor.height / 2), nh(nh), frameColor(0), frameIrDepth(0),
-      pubFrameColor(0), pubFrameIrDepth(0), lastColor(0, 0), lastDepth(0, 0), nextColor(false), nextIrDepth(false), depthShift(0), running(false)
+      pubFrameColor(0), pubFrameIrDepth(0), lastColor(0, 0), lastDepth(0, 0), nextColor(false), nextIrDepth(false), depthShift(0), running(false),
+      depthRegLowRes(0), depthRegHighRes(0), depthRegScaled(0)
   {
     color = cv::Mat::zeros(sizeColor, CV_8UC3);
     ir = cv::Mat::zeros(sizeIr, CV_32F);
@@ -252,7 +258,7 @@ private:
     nh.param("png_level", png_level, 1);
     nh.param("depth_method", depth_method, depthDefault);
     nh.param("depth_device", depth_dev, -1);
-    nh.param("reg_enabled", reg_enabled, false);
+    nh.param("reg_enabled", reg_enabled, true);
     nh.param("reg_method", reg_method, regDefault);
     nh.param("reg_device", reg_dev, -1);
     nh.param("reg_cl_source", reg_cl_source, std::string());
@@ -316,7 +322,10 @@ private:
       initCalibration(calib_path, sensor, scale);
     }
 
-    ret = ret && initRegistration(reg_method, reg_dev, maxDepth, reg_cl_source);
+    if(ret && reg_enabled)
+    {
+      ret = ret && initRegistration(reg_method, reg_dev, maxDepth, reg_cl_source);
+    }
 
     if(ret)
     {
@@ -401,6 +410,7 @@ private:
     else if(method == "opengl")
     {
 #ifdef LIBFREENECT2_WITH_OPENGL_SUPPORT
+      glfwInit();
       packetPipeline = new libfreenect2::OpenGLPacketPipeline();
 #else
       std::cerr << "OpenGL depth processing is not available!" << std::endl;
@@ -454,12 +464,15 @@ private:
     topics[DEPTH_RECT] = K2_TOPIC_RECT_DEPTH;
     topics[DEPTH_LORES] = K2_TOPIC_LORES_DEPTH;
     topics[DEPTH_HIRES] = K2_TOPIC_HIRES_DEPTH;
+    topics[DEPTH_SCALED] = K2_TOPIC_SCALED_DEPTH;
     topics[COLOR] = K2_TOPIC_IMAGE_COLOR;
     topics[COLOR_RECT] = K2_TOPIC_RECT_COLOR;
     topics[COLOR_LORES] = K2_TOPIC_LORES_COLOR;
+    topics[COLOR_SCALED] = K2_TOPIC_SCALED_COLOR;
     topics[MONO] = K2_TOPIC_IMAGE_MONO;
     topics[MONO_RECT] = K2_TOPIC_RECT_MONO;
     topics[MONO_LORES] = K2_TOPIC_LORES_MONO;
+    topics[MONO_SCALED] = K2_TOPIC_SCALED_MONO;
 
     imagePubs.resize(COUNT);
     compressedPubs.resize(COUNT);
@@ -606,7 +619,6 @@ private:
     cameraMatrixLowRes.at<double>(0, 2) /= 2;
     cameraMatrixLowRes.at<double>(1, 2) /= 2;
 
-    // TODO: cameraMatrixScaled
     if (scale > 0.0)
     {
       sizeScaled = cv::Size(sizeColor.width * scale, sizeColor.height * scale);
@@ -618,7 +630,7 @@ private:
     }
     else
     {
-      sizeScaled = sizeIr;
+      sizeScaled = sizeColor;
       cameraMatrixScaled = cameraMatrixIr;
     }
       
@@ -954,7 +966,7 @@ private:
       depth.convertTo(images[DEPTH], CV_16U, 1);
       cv::flip(images[DEPTH], images[DEPTH], 1);
     }
-    if(status[DEPTH_RECT] || status[DEPTH_LORES] || status[DEPTH_HIRES])
+    if(status[DEPTH_RECT] || status[DEPTH_LORES] || status[DEPTH_HIRES] || status[DEPTH_SCALED])
     {
       depth.convertTo(depthShifted, CV_16U, 1, depthShift);
       cv::flip(depthShifted, depthShifted, 1);
@@ -963,19 +975,19 @@ private:
     {
       cv::remap(depthShifted, images[DEPTH_RECT], map1Ir, map2Ir, cv::INTER_NEAREST);
     }
-    if(status[DEPTH_LORES])
+    if(status[DEPTH_LORES] && depthRegLowRes)
     {
       lockRegLowRes.lock();
       depthRegLowRes->registerDepth(depthShifted, images[DEPTH_LORES]);
       lockRegLowRes.unlock();
     }
-    if(status[DEPTH_HIRES])
+    if(status[DEPTH_HIRES] && depthRegHighRes)
     {
       lockRegHighRes.lock();
       depthRegHighRes->registerDepth(depthShifted, images[DEPTH_HIRES]);
       lockRegHighRes.unlock();
     }
-    if(status[DEPTH_SCALED])
+    if(status[DEPTH_SCALED] && depthRegScaled)
     {
       lockRegScaled.lock();
       depthRegScaled->registerDepth(depthShifted, images[DEPTH_SCALED]);
@@ -986,7 +998,7 @@ private:
   void processColor(const cv::Mat &color, std::vector<cv::Mat> &images, const std::vector<Status> &status)
   {
     // COLOR
-    if(status[COLOR] || status[COLOR_RECT] || status[COLOR_LORES] || status[MONO] || status[MONO_RECT] || status[MONO_LORES])
+    if(status[COLOR] || status[COLOR_RECT] || status[COLOR_LORES] || status[COLOR_SCALED] || status[MONO] || status[MONO_RECT] || status[MONO_LORES] || status [MONO_SCALED])
     {
       cv::flip(color, images[COLOR], 1);
     }
@@ -1015,6 +1027,10 @@ private:
     if(status[MONO_LORES])
     {
       cv::cvtColor(images[COLOR_LORES], images[MONO_LORES], CV_BGR2GRAY);
+    }
+    if(status[MONO_SCALED])
+    {
+      cv::cvtColor(images[COLOR_SCALED], images[MONO_SCALED], CV_BGR2GRAY);
     }
   }
 
@@ -1097,16 +1113,19 @@ private:
     case DEPTH_RECT:
     case DEPTH_LORES:
     case DEPTH_HIRES:
+    case DEPTH_SCALED:
       msgImage.encoding = sensor_msgs::image_encodings::TYPE_16UC1;
       break;
     case COLOR:
     case COLOR_RECT:
     case COLOR_LORES:
+    case COLOR_SCALED:
       msgImage.encoding = sensor_msgs::image_encodings::BGR8;
       break;
     case MONO:
     case MONO_RECT:
     case MONO_LORES:
+    case MONO_SCALED:
       msgImage.encoding = sensor_msgs::image_encodings::MONO8;
       break;
     case COUNT:
@@ -1137,6 +1156,7 @@ private:
     case DEPTH_RECT:
     case DEPTH_LORES:
     case DEPTH_HIRES:
+    case DEPTH_SCALED:
       {
         compressed_depth_image_transport::ConfigHeader compressionConfig;
         const size_t headerSize = sizeof(compressed_depth_image_transport::ConfigHeader);
@@ -1154,12 +1174,14 @@ private:
     case COLOR:
     case COLOR_RECT:
     case COLOR_LORES:
+    case COLOR_SCALED:
       msgImage.format = sensor_msgs::image_encodings::BGR8 + "; jpeg compressed bgr8";
       cv::imencode(".jpg", image, msgImage.data, compressionParams);
       break;
     case MONO:
     case MONO_RECT:
     case MONO_LORES:
+    case MONO_SCALED:
       msgImage.format = sensor_msgs::image_encodings::MONO8 + "; png compressed ";
       cv::imencode(".png", image, msgImage.data, compressionParams);
       break;

@@ -1,10 +1,130 @@
-kinect2-ros (0.0.1-63) unstable; urgency=low
+kinect2-ros (0.0.1-116) unstable; urgency=low
+
+  * Bugfixes concerning OpenGL depth method and scaled topics
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Thu, 19 Mar 2015 09:36:00 +0100
+
+kinect2-ros (0.0.1-115) unstable; urgency=low
 
   * Updated README.md
 
- -- Ralf Kaestner <ralf.kaestner@gmail.com>  Mon, 16 Feb 2015 16:52:00 +0100
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 18 Mar 2015 08:43:47 +0100
 
-kinect2-ros (0.0.1-62) unstable; urgency=low
+kinect2-ros (0.0.1-114) unstable; urgency=low
+
+  * Updated README.md
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 18 Mar 2015 08:43:20 +0100
+
+kinect2-ros (0.0.1-113) unstable; urgency=low
+
+  * Updated README.md
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 18 Mar 2015 08:42:42 +0100
+
+kinect2-ros (0.0.1-112) unstable; urgency=low
+
+  * Updated README.md
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 18 Mar 2015 08:42:10 +0100
+
+kinect2-ros (0.0.1-111) unstable; urgency=low
+
+  * Merge branch 'master' into devel
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Wed, 18 Mar 2015 08:35:11 +0100
+
+kinect2-ros (0.0.1-110) unstable; urgency=low
+
+  * Update README.md
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Fri, 13 Mar 2015 16:01:02 +0100
+
+kinect2-ros (0.0.1-109) unstable; urgency=low
+
+  * Update README.md
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Fri, 13 Mar 2015 16:00:25 +0100
+
+kinect2-ros (0.0.1-108) unstable; urgency=low
+
+  * Added parameter description of launch file.
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Fri, 13 Mar 2015 15:59:42 +0100
+
+kinect2-ros (0.0.1-107) unstable; urgency=low
+
+  * Update README.md
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Fri, 13 Mar 2015 15:40:59 +0100
+
+kinect2-ros (0.0.1-106) unstable; urgency=low
+
+  * added usage to readme.
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Fri, 13 Mar 2015 15:36:56 +0100
+
+kinect2-ros (0.0.1-105) unstable; urgency=low
+
+  * Update README.md
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Mon, 23 Feb 2015 15:25:52 +0100
+
+kinect2-ros (0.0.1-104) unstable; urgency=low
+
+  * Update README.md
+  * fixed meaning of raw in the pictures
+
+ -- Alexis Maldonado <amaldo@cs.uni-bremen.de>  Wed, 18 Feb 2015 11:40:33 +0100
+
+kinect2-ros (0.0.1-103) unstable; urgency=low
+
+  * Added a default distance of 52 mm between color and ir if no calibration
+    data is provided.
+  * added additional foreground check run to depth registration.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 18 Feb 2015 11:32:28 +0100
+
+kinect2-ros (0.0.1-102) unstable; urgency=low
+
+  * Update README.md
+  * Added examples of uncalibrated vs calibrated images.
+
+ -- Alexis Maldonado <amaldo@cs.uni-bremen.de>  Tue, 17 Feb 2015 18:07:37 +0100
+
+kinect2-ros (0.0.1-101) unstable; urgency=low
+
+  * Update README.md
+  * Added an image about the typical calibration setup.
+
+ -- Alexis Maldonado <amaldo@cs.uni-bremen.de>  Tue, 17 Feb 2015 17:42:13 +0100
+
+kinect2-ros (0.0.1-100) unstable; urgency=low
+
+  * Update README.md
+  * fixed typo
+
+ -- Alexis Maldonado <amaldo@cs.uni-bremen.de>  Tue, 17 Feb 2015 17:29:17 +0100
+
+kinect2-ros (0.0.1-99) unstable; urgency=low
+
+  * Update README.md
+
+ -- Alexis Maldonado <amaldo@cs.uni-bremen.de>  Tue, 17 Feb 2015 17:27:06 +0100
+
+kinect2-ros (0.0.1-98) unstable; urgency=low
+
+  * Added Publications.
+
+ -- Péter Fankhauser <peterfankhauser@me.com>  Tue, 17 Feb 2015 10:45:40 +0100
+
+kinect2-ros (0.0.1-97) unstable; urgency=low
+
+  * Updated README.md
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Mon, 16 Feb 2015 16:52:37 +0100
+
+kinect2-ros (0.0.1-96) unstable; urgency=low
 
   * kinect2:
     + Renamed meta-package
@@ -36,7 +156,251 @@ kinect2-ros (0.0.1-62) unstable; urgency=low
     + Added install rules
     + Fixed includes to comply with ROS standards
 
- -- Ralf Kaestner <ralf.kaestner@gmail.com>  Mon, 16 Feb 2015 15:16:00 +0100
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Mon, 16 Feb 2015 15:22:20 +0100
+
+kinect2-ros (0.0.1-95) unstable; urgency=low
+
+  * added note to calibration instructions
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 13 Feb 2015 10:59:19 +0100
+
+kinect2-ros (0.0.1-94) unstable; urgency=low
+
+  * added fix for reduced color frame rate when cpu load is high and depth
+    processing takes longer than new frames to arrive.
+  * worker threads with even thread id will first check for depth frames,
+    while the ones with odd ids will first check color frames.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 13 Feb 2015 10:58:58 +0100
+
+kinect2-ros (0.0.1-93) unstable; urgency=low
+
+  * changed calibration and viewer to be anonymous nodes.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 11 Feb 2015 16:16:33 +0100
+
+kinect2-ros (0.0.1-92) unstable; urgency=low
+
+  * flip images only if necessary.
+  * for depth and ir apply flipping after conversion to 16 bit (faster).
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 11 Feb 2015 16:15:34 +0100
+
+kinect2-ros (0.0.1-91) unstable; urgency=low
+
+  * nodelet manager name can now be passed as an argument to the launch
+    file.
+  * added argument to disable start of own nodelet manager if kinect2_bridge
+    should use an external nodelet manager.
+  * added machine tag to nodelet manager.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 11 Feb 2015 16:04:45 +0100
+
+kinect2-ros (0.0.1-90) unstable; urgency=low
+
+  * removed static transform publisher launch file, because functionality is
+    now inside kinect2_bridge.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 11 Feb 2015 16:01:21 +0100
+
+kinect2-ros (0.0.1-89) unstable; urgency=low
+
+  * added a nodelet wrapper for kinect2_bridge.
+  * added all parameters of kinect2_bridge as arguments for the launch
+    file.
+  * the launch file created a nodelet manager for kinect2_bridge_nodelet and
+    point cloud nodelets.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 10 Feb 2015 10:35:36 +0100
+
+kinect2-ros (0.0.1-88) unstable; urgency=low
+
+  * fixed default values for bilateral and edge aware filter.
+  * added information on processing time for color and depth.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 06 Feb 2015 10:31:54 +0100
+
+kinect2-ros (0.0.1-87) unstable; urgency=low
+
+  * added number of threads for image processing as a parameter.
+  * cleaned up CMakeLists.txt.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 05 Feb 2015 16:26:30 +0100
+
+kinect2-ros (0.0.1-86) unstable; urgency=low
+
+  * Added argument for machine to launch-file kinect2_bridge.
+
+ -- Georg Bartels <georg.bartels@cs.uni-bremen.de>  Thu, 05 Feb 2015 15:14:35 +0100
+
+kinect2-ros (0.0.1-85) unstable; urgency=low
+
+  * fix for sensor serial not beeing parsed.
+  * changed name of node in lauch file to the defined base_name.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 05 Feb 2015 10:35:18 +0100
+
+kinect2-ros (0.0.1-84) unstable; urgency=low
+
+  * switched back to upstream libfreenect2.
+  * updated documentation.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 04 Feb 2015 10:22:10 +0100
+
+kinect2-ros (0.0.1-83) unstable; urgency=low
+
+  * added support for variable base name.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 03 Feb 2015 14:58:43 +0100
+
+kinect2-ros (0.0.1-82) unstable; urgency=low
+
+  * base name for topics is now modifiable to support multiple kinect2 on
+    one roscore.
+  * all parameter are now handled by ros.
+  * integrated a static tf publisher that uses the calibration results.
+  * updated the launch file.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 03 Feb 2015 14:58:05 +0100
+
+kinect2-ros (0.0.1-81) unstable; urgency=low
+
+  * decoupled receiving of depth and color frames, so that each is published
+    with their maximum frequency.
+  * added synchronization of timestamps so that the exact time message filtering
+    works.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 30 Jan 2015 13:43:33 +0100
+
+kinect2-ros (0.0.1-80) unstable; urgency=low
+
+  * added configuration of depth packet processor.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 29 Jan 2015 12:57:37 +0100
+
+kinect2-ros (0.0.1-79) unstable; urgency=low
+
+  * updated documentation.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 28 Jan 2015 16:42:37 +0100
+
+kinect2-ros (0.0.1-78) unstable; urgency=low
+
+  * added depth calibration to calibration tool.
+  * added depth shift parameter to kinect2_bridge.
+  * added documentation and results for depth calibration to README.
+  * removed duplicated definitions.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 28 Jan 2015 16:19:54 +0100
+
+kinect2-ros (0.0.1-77) unstable; urgency=low
+
+  * added fps info to kinect2_bridge terminal output.
+  * reduced cpu load when using fps limiter.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 27 Jan 2015 09:04:16 +0100
+
+kinect2-ros (0.0.1-76) unstable; urgency=low
+
+  * updated README.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 23 Jan 2015 14:07:56 +0100
+
+kinect2-ros (0.0.1-75) unstable; urgency=low
+
+  * added function that checks the order of color and ir points for sync
+    calibration and orders them in the same way.
+  * added parameter to use 8 instead of 5 coefficients.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Fri, 23 Jan 2015 10:31:42 +0100
+
+kinect2-ros (0.0.1-74) unstable; urgency=low
+
+  * minor changes to ir image preparation
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 22 Jan 2015 13:04:18 +0100
+
+kinect2-ros (0.0.1-73) unstable; urgency=low
+
+  * improved ir image processing for calibration.
+  * fixed ir value range setting.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 21 Jan 2015 11:18:04 +0100
+
+kinect2-ros (0.0.1-72) unstable; urgency=low
+
+  * replaced absolute links to destinations inside the repo to relative
+    links.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 21 Jan 2015 09:12:35 +0100
+
+kinect2-ros (0.0.1-71) unstable; urgency=low
+
+  * updated documentation
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 21 Jan 2015 09:03:44 +0100
+
+kinect2-ros (0.0.1-70) unstable; urgency=low
+
+  * use find_package to find glfw.
+  * added check for cpu depth registration.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Wed, 21 Jan 2015 09:03:20 +0100
+
+kinect2-ros (0.0.1-69) unstable; urgency=low
+
+  * methods for depth registration and processing can now be chosen by command
+    line parameters.
+  * opengl depth processor is now working again.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 20 Jan 2015 17:10:31 +0100
+
+kinect2-ros (0.0.1-68) unstable; urgency=low
+
+  * added controls to adjust ir range.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 20 Jan 2015 17:09:18 +0100
+
+kinect2-ros (0.0.1-67) unstable; urgency=low
+
+  * added different chessboard patterns.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 20 Jan 2015 16:02:40 +0100
+
+kinect2-ros (0.0.1-66) unstable; urgency=low
+
+  * added a cmake config file for depth_registration.
+  * checking available depth_registration methods in kinect2_bridge.
+  * renamed cmake_modules to cmake.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Tue, 20 Jan 2015 09:45:55 +0100
+
+kinect2-ros (0.0.1-65) unstable; urgency=low
+
+  * added fall back if libfreenect2 was not build with CXX11 support.
+  * it can happen that kinect2_bridge hangs up, if libfreenect2 is not receiving
+    frames.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 19 Jan 2015 13:03:03 +0100
+
+kinect2-ros (0.0.1-64) unstable; urgency=low
+
+  * removed CONFIG from find_package to support older cmake versions.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 19 Jan 2015 10:37:16 +0100
+
+kinect2-ros (0.0.1-63) unstable; urgency=low
+
+  * fixed dependency for hydro.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Mon, 19 Jan 2015 10:34:04 +0100
+
+kinect2-ros (0.0.1-62) unstable; urgency=low
+
+  * added receiving and storing of depth images to calibration tool.
+  * depth images might be of use later for a depth calibration.
+
+ -- Thiemo Wiedemeyer <wiedemeyer@informatik.uni-bremen.de>  Thu, 15 Jan 2015 12:57:07 +0100
 
 kinect2-ros (0.0.1-61) unstable; urgency=low
 
