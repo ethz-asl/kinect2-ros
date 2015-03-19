@@ -66,6 +66,13 @@
     <remap from="depth_registered/points"     to="/$(arg base_name)/depth_lowres/points" />
     <param name="queue_size" type="int" value="2" />
   </node>
+  <node pkg="nodelet" type="nodelet" name="$(arg base_name)_points_xyz_lowres" machine="$(arg machine)"
+        args="load depth_image_proc/point_cloud_xyz $(arg nodelet_manager)" respawn="true" unless="$(arg reg_enabled)">
+    <remap from="camera_info"                 to="/$(arg base_name)/depth_lowres/camera_info" />
+    <remap from="image_rect"                  to="/$(arg base_name)/depth_lowres/image" />
+    <remap from="points"                      to="/$(arg base_name)/depth_lowres/points" />
+    <param name="queue_size" type="int" value="2" />
+  </node>
 
   <!-- high resolution point cloud (1920 x 1080) -->
   <node pkg="nodelet" type="nodelet" name="$(arg base_name)_points_xyzrgb_highres" machine="$(arg machine)"
@@ -76,6 +83,13 @@
     <remap from="depth_registered/points"     to="/$(arg base_name)/depth_highres/points" />
     <param name="queue_size" type="int" value="2" />
   </node>
+  <node pkg="nodelet" type="nodelet" name="$(arg base_name)_points_xyz_highres" machine="$(arg machine)"
+        args="load depth_image_proc/point_cloud_xyz $(arg nodelet_manager)" respawn="true" unless="$(arg reg_enabled)">
+    <remap from="camera_info"                 to="/$(arg base_name)/depth_highres/camera_info" />
+    <remap from="image_rect"                  to="/$(arg base_name)/depth_highres/image" />
+    <remap from="points"                      to="/$(arg base_name)/depth_highres/points" />
+    <param name="queue_size" type="int" value="2" />
+  </node>
   
   <!-- scaled resolution point cloud (dependent on scale parameter) -->
   <node pkg="nodelet" type="nodelet" name="$(arg base_name)_points_xyzrgb_scaled" machine="$(arg machine)"
@@ -84,6 +98,13 @@
     <remap from="rgb/image_rect_color"        to="/$(arg base_name)/rgb_scaled/image" />
     <remap from="depth_registered/image_rect" to="/$(arg base_name)/depth_scaled/image" />
     <remap from="depth_registered/points"     to="/$(arg base_name)/depth_scaled/points" />
+    <param name="queue_size" type="int" value="2" />
+  </node>
+  <node pkg="nodelet" type="nodelet" name="$(arg base_name)_points_xyz_scaled" machine="$(arg machine)"
+        args="load depth_image_proc/point_cloud_xyz $(arg nodelet_manager)" respawn="true" unless="$(arg reg_enabled)">
+    <remap from="camera_info"                 to="/$(arg base_name)/depth_scaled/camera_info" />
+    <remap from="image_rect"                  to="/$(arg base_name)/depth_scaled/image" />
+    <remap from="points"                      to="/$(arg base_name)/depth_scaled/points" />
     <param name="queue_size" type="int" value="2" />
   </node>
 </launch>

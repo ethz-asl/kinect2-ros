@@ -1,3 +1,9 @@
+kinect2-ros (0.0.1-117) unstable; urgency=low
+
+  * Added xyz depth image processing for disabled color registration
+
+ -- Ralf Kaestner <ralf.kaestner@gmail.com>  Thu, 19 Mar 2015 12:31:00 +0100
+
 kinect2-ros (0.0.1-116) unstable; urgency=low
 
   * Bugfixes concerning OpenGL depth method and scaled topics

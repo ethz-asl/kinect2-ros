@@ -975,23 +975,44 @@ private:
     {
       cv::remap(depthShifted, images[DEPTH_RECT], map1Ir, map2Ir, cv::INTER_NEAREST);
     }
-    if(status[DEPTH_LORES] && depthRegLowRes)
+    if(status[DEPTH_LORES])
     {
-      lockRegLowRes.lock();
-      depthRegLowRes->registerDepth(depthShifted, images[DEPTH_LORES]);
-      lockRegLowRes.unlock();
+      if(depthRegLowRes)
+      {
+        lockRegLowRes.lock();
+        depthRegLowRes->registerDepth(depthShifted, images[DEPTH_LORES]);
+        lockRegLowRes.unlock();
+      }
+      else
+      {
+        cv::remap(depthShifted, images[DEPTH_LORES], map1LowRes, map2LowRes, cv::INTER_NEAREST);
+      }
     }
-    if(status[DEPTH_HIRES] && depthRegHighRes)
+    if(status[DEPTH_HIRES])
     {
-      lockRegHighRes.lock();
-      depthRegHighRes->registerDepth(depthShifted, images[DEPTH_HIRES]);
-      lockRegHighRes.unlock();
+      if(depthRegHighRes)
+      {      
+        lockRegHighRes.lock();
+        depthRegHighRes->registerDepth(depthShifted, images[DEPTH_HIRES]);
+        lockRegHighRes.unlock();
+      }
+      else
+      {
+        images[DEPTH_HIRES] = depthShifted;
+      }
     }
-    if(status[DEPTH_SCALED] && depthRegScaled)
+    if(status[DEPTH_SCALED])
     {
-      lockRegScaled.lock();
-      depthRegScaled->registerDepth(depthShifted, images[DEPTH_SCALED]);
-      lockRegScaled.unlock();
+      if(depthRegScaled)
+      {      
+        lockRegScaled.lock();
+        depthRegScaled->registerDepth(depthShifted, images[DEPTH_SCALED]);
+        lockRegScaled.unlock();
+      }
+      else
+      {
+        cv::remap(depthShifted, images[DEPTH_SCALED], map1Scaled, map2Scaled, cv::INTER_NEAREST);
+      }
     }
   }
 
