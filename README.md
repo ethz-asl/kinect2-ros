@@ -44,7 +44,7 @@ in IEEE International Conference on Advanced Robotics (ICAR), 2015. ([PDF](http:
     @inproceedings{Fankhauser2015KinectV2ForMobileRobotNavigation,
       author = {Fankhauser, Péter and Bloesch, Michael and Rodriguez, Diego and and Kaestner, Ralf and Hutter, Marco and Siegwart, Roland},
       title = {Kinect v2 for Mobile Robot Navigation: Evaluation and Modeling},
-      booktitle = {IEEE International Conference on Advanced Robotics (ICAR) (submitted)},
+      booktitle = {IEEE International Conference on Advanced Robotics (ICAR)},
       year = {2015}
     }
 
